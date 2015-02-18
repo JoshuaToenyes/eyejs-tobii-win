@@ -6,10 +6,13 @@
 
 #include "stdafx.h"
 #include "eyex.h"
+#include "ws.h"
 
 int _tmain(int argc, char* argv[]) {
 
-	eyex_connect();
+	//eyex_connect();
+
+	create_echo_server();
 
 	return 0;
 }
