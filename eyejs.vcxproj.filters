@@ -32,5 +32,8 @@
     <ClCompile Include="eyejs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="eyex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
