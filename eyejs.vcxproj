@@ -57,7 +57,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>Y:\lib\boost\bin.v2\libs\thread\build\msvc-12.0\debug\link-static\threading-multi\win32;Y:\lib\tobii-eyex-sdk-cpp\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>V:\eyejs-tobii-win\lib;Y:\lib\tobii-eyex-sdk-cpp\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /b /y Y:\lib\tobii-eyex-sdk-cpp\lib\x86\*.dll $(OutDir)</Command>

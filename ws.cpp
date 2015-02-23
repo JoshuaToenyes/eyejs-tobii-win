@@ -1,59 +1,40 @@
 #include "stdafx.h"
-#include <websocketpp/config/asio_no_tls.hpp>
-#include <websocketpp/server.hpp>
-#include <iostream>
-
-#define _SCL_SECURE_NO_WARNINGS
-
-typedef websocketpp::server<websocketpp::config::asio> server;
+#include "ws.h"
 
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
 using websocketpp::lib::bind;
 
-// pull out the type of messages sent by our config
-typedef server::message_ptr message_ptr;
+BroadcastServer::BroadcastServer() {
+  wss.init_asio();
 
-// Define a callback to handle incoming messages
-void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
-    std::cout << "on_message called with hdl: " << hdl.lock().get()
-              << " and message: " << msg->get_payload()
-              << std::endl;
-
-    try {
-        s->send(hdl, msg->get_payload(), msg->get_opcode());
-    } catch (const websocketpp::lib::error_code& e) {
-        std::cout << "Echo failed because: " << e
-                  << "(" << e.message() << ")" << std::endl;
-    }
+  wss.set_open_handler(bind(&BroadcastServer::onOpen, this, ::_1));
+  wss.set_close_handler(bind(&BroadcastServer::onClose, this, ::_1));
+  wss.set_message_handler(bind(&BroadcastServer::onMessage, this, ::_1, ::_2));
 }
 
-void create_echo_server() {
-    // Create a server endpoint
-    server echo_server;
+void BroadcastServer::onOpen(connectionHandle handle) {
+  connections.insert(handle);
+}
 
-    try {
-        // Set logging settings
-        echo_server.set_access_channels(websocketpp::log::alevel::all);
-        echo_server.clear_access_channels(websocketpp::log::alevel::frame_payload);
+void BroadcastServer::onClose(connectionHandle handle) {
+  connections.erase(handle);
+}
 
-        // Initialize ASIO
-        echo_server.init_asio();
+void BroadcastServer::onMessage(connectionHandle hdl, message msg) {
+  for (auto connection : connections) {
+    wss.send(connection, msg);
+  }
+}
 
-        // Register our message handler
-        echo_server.set_message_handler(bind(&on_message,&echo_server,::_1,::_2));
+void BroadcastServer::send(std::string msg) {
+  for (auto connection : connections) {
+    wss.send(connection, msg, websocketpp::frame::opcode::text);
+  }
+}
 
-        // Listen on port 9002
-        echo_server.listen(9002);
-
-        // Start the server accept loop
-        echo_server.start_accept();
-
-        // Start the ASIO io_service run loop
-        echo_server.run();
-    } catch (websocketpp::exception const & e) {
-        std::cout << e.what() << std::endl;
-    } catch (...) {
-        std::cout << "other exception" << std::endl;
-    }
+void BroadcastServer::run(uint16_t port) {
+  wss.listen(port);
+  wss.start_accept();
+  wss.run();
 }
