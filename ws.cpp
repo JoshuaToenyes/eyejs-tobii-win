@@ -1,9 +1,6 @@
 #include "stdafx.h"
-
 #include <websocketpp/config/asio_no_tls.hpp>
-
 #include <websocketpp/server.hpp>
-
 #include <iostream>
 
 #define _SCL_SECURE_NO_WARNINGS

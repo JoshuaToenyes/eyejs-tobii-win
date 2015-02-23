@@ -30,6 +30,9 @@
     <ClInclude Include="ws.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="eyejs.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
