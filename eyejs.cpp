@@ -17,10 +17,35 @@
 
 #include <boost/thread.hpp>
 
+const int PORT = 5619;
+
+const char * EYEJS_GAZE_MSG_FMT =
+  "{"
+		"\"type\": \"gaze\","
+		"\"avg\": {x: %.1f, y: %.1f},"
+		"\"left\": {x: %.1f, y: %.1f},"
+		"\"right\": {x: %.1f, y: %.1f},"
+		"\"available\": {\"left\": %s, \"right\": %s, \"both\": %s},"
+	"}";
+
 BroadcastServer wss;
 
+void GazeMsgToJSON(EYEJS_GAZE_MSG msg, char* s) {
+	sprintf(s, EYEJS_GAZE_MSG_FMT,
+		msg.avg.x,
+		msg.avg.y,
+		msg.left.x,
+		msg.left.y,
+		msg.right.x,
+		msg.right.y,
+		msg.available.left  ? "true" : "false",
+		msg.available.right ? "true" : "false",
+		msg.available.both  ? "true" : "false");
+}
+
+
 void GazeDataEventHandler(TX_GAZEPOINTDATAEVENTPARAMS eventParams) {
-	EYEJS_GAZEMSG msg;
+	EYEJS_GAZE_MSG msg;
 	msg.timestamp = eventParams.Timestamp;
 
 	msg.avg.x 	= eventParams.X;
@@ -34,13 +59,11 @@ void GazeDataEventHandler(TX_GAZEPOINTDATAEVENTPARAMS eventParams) {
 	msg.available.right = true;
 	msg.available.both 	= true;
 
-	char t[100];
+	char t[1000];
 
-	sprintf(t, "MY Gaze Data: (%.1f, %.1f) timestamp %.0f ms\n", eventParams.X, eventParams.Y, eventParams.Timestamp);
+	GazeMsgToJSON(msg, t);
 
 	wss.send(t);
-
-	printf("MY Gaze Data: (%.1f, %.1f) timestamp %.0f ms\n", eventParams.X, eventParams.Y, eventParams.Timestamp);
 }
 
 
@@ -50,7 +73,7 @@ void eyeXWorker() {
 
 
 void wsWorker() {
-	wss.run(9002);
+	wss.run(PORT);
 }
 
 

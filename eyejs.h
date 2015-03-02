@@ -1,3 +1,6 @@
+#ifndef __EYEJS_H__
+#define __EYEJS_H__
+
 void GazeDataEventHandler(TX_GAZEPOINTDATAEVENTPARAMS eventParams);
 
 typedef struct {
@@ -13,4 +16,6 @@ typedef struct {
 	double 							timestamp;
 	EYEJS_COORDINATES 	avg, left, right;
 	EYEJS_AVAILABILITY 	available;
-} EYEJS_GAZEMSG;
+} EYEJS_GAZE_MSG;
+
+#endif

@@ -97,7 +97,6 @@ void OnGazeDataEvent(TX_HANDLE hGazeDataBehavior) {
   TX_GAZEPOINTDATAEVENTPARAMS eventParams;
   if (txGetGazePointDataEventParams(hGazeDataBehavior, &eventParams) == TX_RESULT_OK) {
     GazeDataEventHandler(eventParams);
-    //printf("Gaze Data: (%.1f, %.1f) timestamp %.0f ms\n", eventParams.X, eventParams.Y, eventParams.Timestamp);
   }
   else {
     printf("Failed to interpret gaze data event packet.\n");
