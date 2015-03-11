@@ -25,6 +25,7 @@ static TX_HANDLE g_hGlobalInteractorSnapshot = TX_EMPTY_HANDLE;
 */
 BOOL InitializeGlobalInteractorSnapshot(TX_CONTEXTHANDLE hContext) {
   TX_HANDLE hInteractor = TX_EMPTY_HANDLE;
+  TX_HANDLE hBehaviorWithoutParameters = TX_EMPTY_HANDLE;
   TX_GAZEPOINTDATAPARAMS params = { TX_GAZEPOINTDATAMODE_LIGHTLYFILTERED };
   BOOL success;
 
@@ -34,6 +35,7 @@ BOOL InitializeGlobalInteractorSnapshot(TX_CONTEXTHANDLE hContext) {
     &g_hGlobalInteractorSnapshot,
     &hInteractor) == TX_RESULT_OK;
   success &= txCreateGazePointDataBehavior(hInteractor, &params) == TX_RESULT_OK;
+  success &= txCreateInteractorBehavior(hInteractor, &hBehaviorWithoutParameters, TX_BEHAVIORTYPE_EYEPOSITIONDATA) == TX_RESULT_OK;
 
   txReleaseObject(&hInteractor);
 
@@ -103,6 +105,18 @@ void OnGazeDataEvent(TX_HANDLE hGazeDataBehavior) {
   }
 }
 
+
+void OnPositionDataEvent(TX_HANDLE hEyePositionDataBehavior) {
+  TX_EYEPOSITIONDATAEVENTPARAMS eventParams;
+  if (txGetEyePositionDataEventParams(hEyePositionDataBehavior, &eventParams) == TX_RESULT_OK) {
+    PositionDataEventHandler(eventParams);
+  }
+  else {
+    printf("Failed to interpret eye position data event packet.\n");
+  }
+}
+
+
 /*
 * Callback function invoked when an event has been received from the EyeX Engine.
 */
@@ -119,6 +133,11 @@ void TX_CALLCONVENTION HandleEvent(TX_CONSTHANDLE hAsyncData, TX_USERPARAM userP
     OnGazeDataEvent(hBehavior);
     txReleaseObject(&hBehavior);
   }
+
+  if (txGetEventBehavior(hEvent, &hBehavior, TX_BEHAVIORTYPE_EYEPOSITIONDATA) == TX_RESULT_OK) {
+    OnPositionDataEvent(hBehavior);
+		txReleaseObject(&hBehavior);
+	}
 
   // NOTE since this is a very simple application with a single interactor and a single data stream,
   // our event handling code can be very simple too. A more complex application would typically have to

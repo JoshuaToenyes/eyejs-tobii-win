@@ -30,7 +30,9 @@ const char * EYEJS_GAZE_MSG_FMT =
 
 BroadcastServer wss;
 
-void GazeMsgToJSON(EYEJS_GAZE_MSG msg, char* s) {
+EYEJS_GAZE_MSG msg;
+
+void EyeJSMsgToJSON(EYEJS_GAZE_MSG msg, char* s) {
 	sprintf(s, EYEJS_GAZE_MSG_FMT,
 		msg.avg.x,
 		msg.avg.y,
@@ -45,25 +47,23 @@ void GazeMsgToJSON(EYEJS_GAZE_MSG msg, char* s) {
 
 
 void GazeDataEventHandler(TX_GAZEPOINTDATAEVENTPARAMS eventParams) {
-	EYEJS_GAZE_MSG msg;
 	msg.timestamp = eventParams.Timestamp;
 
 	msg.avg.x 	= eventParams.X;
 	msg.avg.y 	= eventParams.Y;
-	msg.left.x 	= 0;
-	msg.left.y 	= 0;
-	msg.right.x = 0;
-	msg.right.y = 0;
-
-	msg.available.left 	= true;
-	msg.available.right = true;
-	msg.available.both 	= true;
 
 	char t[1000];
 
-	GazeMsgToJSON(msg, t);
+	EyeJSMsgToJSON(msg, t);
 
 	wss.send(t);
+}
+
+
+void PositionDataEventHandler(TX_EYEPOSITIONDATAEVENTPARAMS eventParams) {
+  msg.available.right = !(eventParams.RightEyeXNormalized == 0.0 && eventParams.RightEyeYNormalized == 0.0 && eventParams.RightEyeZNormalized == 0.0);
+  msg.available.left = !(eventParams.LeftEyeXNormalized == 0.0 && eventParams.LeftEyeYNormalized == 0.0 && eventParams.LeftEyeZNormalized == 0.0);
+  msg.available.both = msg.available.right && msg.available.left;
 }
 
 
@@ -78,6 +78,16 @@ void wsWorker() {
 
 
 int _tmain(int argc, char* argv[]) {
+
+  msg.avg.x 	= 0;
+  msg.avg.y 	= 0;
+  msg.left.x 	= 0;
+  msg.left.y 	= 0;
+  msg.right.x = 0;
+  msg.right.y = 0;
+  msg.available.left 	= true;
+  msg.available.right = true;
+  msg.available.both 	= true;
 
 	boost::thread eyeXThread(eyeXWorker);
 

@@ -2,6 +2,7 @@
 #define __EYEJS_H__
 
 void GazeDataEventHandler(TX_GAZEPOINTDATAEVENTPARAMS eventParams);
+void PositionDataEventHandler(TX_EYEPOSITIONDATAEVENTPARAMS eventParams);
 
 typedef struct {
 	double x, y;
