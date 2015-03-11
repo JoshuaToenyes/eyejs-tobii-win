@@ -22,10 +22,10 @@ const int PORT = 5619;
 const char * EYEJS_GAZE_MSG_FMT =
   "{"
 		"\"type\": \"gaze\","
-		"\"avg\": {x: %.1f, y: %.1f},"
-		"\"left\": {x: %.1f, y: %.1f},"
-		"\"right\": {x: %.1f, y: %.1f},"
-		"\"available\": {\"left\": %s, \"right\": %s, \"both\": %s},"
+		"\"avg\": {\"x\": %.1f, \"y\": %.1f},"
+		"\"left\": {\"x\": %.1f, \"y\": %.1f},"
+		"\"right\": {\"x\": %.1f, \"y\": %.1f},"
+		"\"available\": {\"left\": %s, \"right\": %s, \"both\": %s}"
 	"}";
 
 BroadcastServer wss;

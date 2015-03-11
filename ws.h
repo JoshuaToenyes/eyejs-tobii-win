@@ -2,8 +2,10 @@
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <set>
+
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
@@ -20,6 +22,7 @@ class BroadcastServer {
 private:
   server wss;
   connectionList connections;
+  std::ofstream log;
 
 public:
   BroadcastServer();

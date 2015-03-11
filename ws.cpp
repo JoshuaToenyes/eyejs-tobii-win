@@ -8,6 +8,14 @@ using websocketpp::lib::bind;
 BroadcastServer::BroadcastServer() {
   wss.init_asio();
 
+  // Log to a file rather than stdout.
+  log.open("ws-output.log");
+  wss.get_alog().set_ostream(&log);
+  wss.get_elog().set_ostream(&log);
+
+  // Print all output to stdout.
+  //wss.register_ostream(&std::cout);
+
   wss.set_open_handler(bind(&BroadcastServer::onOpen, this, ::_1));
   wss.set_close_handler(bind(&BroadcastServer::onClose, this, ::_1));
   wss.set_message_handler(bind(&BroadcastServer::onMessage, this, ::_1, ::_2));
